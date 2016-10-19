@@ -11,7 +11,7 @@ EXPOSE 8001
 WORKDIR /serviceApp
 ADD ./serviceApp /serviceApp
 
-RUN pip install -r /webApp/requirements.txt
+RUN pip install -r /serviceApp/requirements.txt
 
-CMD python /serviceApp/server.py 
+CMD python /serviceApp/serviceApp.py 
 
