@@ -21,7 +21,7 @@ class MyRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
             self.respond("Unknow request", 400)
 
         # HTTP status processing /status
-        if elem[1].lower() == "status" :
+        elif elem[1].lower() == "status" :
             response = ("Service OK");
             self.respond(response)
 
@@ -69,5 +69,8 @@ if __name__=='__main__':
     PORT = 8001
     httpd = SocketServer.TCPServer(("", int(PORT)), MyRequestHandler)
     print(getLogTime() + "service1 at port " + str(PORT))
-    httpd.serve_forever()
+    try:
+        httpd.serve_forever()
+    except:
+        httpd.server_close()
 
