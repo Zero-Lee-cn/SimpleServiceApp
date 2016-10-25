@@ -13,7 +13,28 @@ class MyRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
 
     def do_GET(self):
         #Get Download URL & Report Callback URL
-        params = urlparse(self.path).query
+        # params = urlparse(self.path).query
+        elem = urlparse(self.path).path.split('/')
+        print elem
+
+        if len(elem) > 1:
+            self.respond("Unknow request", 400)
+
+        # HTTP status processing /status
+        if elem[1].lower() == "status" :
+            response = ("Service OK");
+            self.respond(response)
+
+        # HTTP request processing /eco
+        elif elem[1].lower() == "eco" :
+            response = ("Request received");
+            self.respond(response)
+
+        else :
+            self.respond("Unknow request", 400)
+
+        # HTTP forward processing /forward TODO
+
 
         #query_components = dict(qc.split("=") for qc in params.split("&"))
         #print(getLogTime() + "Receive Params URL:" + str(query_components["url"]) +\
@@ -26,9 +47,6 @@ class MyRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
         #                                  query_components["callback_error"], ))
         #p.start()
 
-        #Reply 200 to Client
-        response = ("Request received");
-        self.respond(response)
 
     def do_POST(self):
         self.do_GET() # currently same as post, but can be anything
