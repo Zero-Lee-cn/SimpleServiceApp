@@ -17,7 +17,7 @@ class MyRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
         elem = urlparse(self.path).path.split('/')
         print elem
 
-        if len(elem) > 1:
+        if len(elem) > 2:
             self.respond("Unknow request", 400)
 
         # HTTP status processing /status
