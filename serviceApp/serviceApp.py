@@ -87,7 +87,7 @@ if __name__=='__main__':
 
     #PORT = config.get('SETTINGS', 'SERVICE_PORT')
     print os.getenv('SERVER_IP', "127.0.0.1")
-    print os.getenv('SERVER_PORT', 80)
+    print os.getenv('SERVER_PORT', 8001)
 
     PORT = os.getenv('SELF_PORT', 8001)
     print PORT
