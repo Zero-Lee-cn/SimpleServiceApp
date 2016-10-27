@@ -3,6 +3,7 @@ import socket
 import fcntl
 import struct
 import urllib
+import ConfigParser
 import SocketServer
 import BaseHTTPServer
 from multiprocessing import Process
@@ -24,7 +25,7 @@ def get_ip_address(ifname):
 
 
 def getLogTime():
-    return date.today().strftime('%Y-%m-%d ') + datetime.now().strftime('%H:%M:%S.%f ')[:-3] + ' ' + get_ip_address('eth0') + ":" + str(PORT) + ' '
+    return date.today().strftime('%Y-%m-%d ') + datetime.now().strftime('%H:%M:%S.%f ')[:-3] + ' ' + get_ip_address('eth0') + ":" + PORT + ' '
 
 def process():
     print(getLogTime() + "Detached Processing from  " )
@@ -71,6 +72,8 @@ class MyRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
                 print(getLogTime() + "HTTP GET Req reach to " + SERVER_URL)
                 self.respond("HTTP GET Req reach to " + SERVER_URL)
 
+        elif elem[1].lower() == "crash" :
+            exit(2)
         else :
             self.respond("Unknow request", 400)
 
@@ -100,15 +103,35 @@ class MyRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
 
 if __name__=='__main__':
 
-    #config = ConfigParser.ConfigParser()
-    #config.read('cdnAgent.conf')
+    configs = {}
+    with open("config.properties") as myfile:
+        for line in myfile:
+            name, var = line[:-1].partition("=")[::2]
+            configs[name.strip()] = var
 
-    PORT = os.getenv('self.port', 8001)
+    SERVER_URL="http://"
+
+    if (configs.has_key("self.port")) :
+        PORT = configs["self.port"]
+    else:
+        PORT = "8001"
+    if (configs.has_key("server.ip")) :
+        SERVER_URL += configs["server.ip"]
+    else:
+        SERVER_URL += "127.0.0.1"
+
+    SERVER_URL += ":"
+    if (configs.has_key("server.port")) :
+        SERVER_URL += configs["server.port"]
+    else:
+        SERVER_URL += "8002"
+
+    SERVER_URL += "/eco"
+
     print PORT
-    SERVER_URL="http://"+os.getenv('server.ip', "127.0.0.1") + ":" + str(os.getenv('server.port', 8001)) + "/eco"
     print SERVER_URL
     httpd = SocketServer.TCPServer(("", int(PORT)), MyRequestHandler)
-    print(getLogTime() + "service1 at port " + str(PORT))
+    print(getLogTime() + "service1 at port " + PORT)
     try:
         httpd.serve_forever()
     except:
