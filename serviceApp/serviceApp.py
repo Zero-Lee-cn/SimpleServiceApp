@@ -103,9 +103,9 @@ if __name__=='__main__':
     #config = ConfigParser.ConfigParser()
     #config.read('cdnAgent.conf')
 
-    PORT = os.getenv('SELF_PORT', 8001)
+    PORT = os.getenv('self.port', 8001)
     print PORT
-    SERVER_URL="http://"+os.getenv('SERVER_IP', "127.0.0.1") + ":" + str(os.getenv('SERVER_PORT', 8001)) + "/eco"
+    SERVER_URL="http://"+os.getenv('server.ip', "127.0.0.1") + ":" + str(os.getenv('server.port', 8001)) + "/eco"
     print SERVER_URL
     httpd = SocketServer.TCPServer(("", int(PORT)), MyRequestHandler)
     print(getLogTime() + "service1 at port " + str(PORT))
