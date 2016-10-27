@@ -1,4 +1,7 @@
 import os
+import socket
+import fcntl
+import struct
 import urllib
 import SocketServer
 import BaseHTTPServer
@@ -9,10 +12,19 @@ from urlparse import urlparse
 global PORT
 global SERVER_URL
 
+def get_ip_address(ifname):
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    return socket.inet_ntoa(fcntl.ioctl(
+        s.fileno(),
+        0x8915,  # SIOCGIFADDR
+        struct.pack('256s', ifname[:15])
+    )[20:24])
+
+  # '192.168.0.110'
 
 
 def getLogTime():
-    return date.today().strftime('%Y-%m-%d ') + datetime.now().strftime('%H:%M:%S.%f ')[:-3] + ' '
+    return date.today().strftime('%Y-%m-%d ') + datetime.now().strftime('%H:%M:%S.%f ')[:-3] + ' ' + get_ip_address('eth0') + ":" + PORT + ' '
 
 def process():
     print(getLogTime() + "Detached Processing from  " )
@@ -20,11 +32,9 @@ def process():
     if (resp.getcode() != 200) :
         print(getLogTime() + "Status:" + str(resp.getcode()) + ", Body:" + str(resp.read()))
         print(getLogTime() + SERVER_URL + "is not accessible")
-        # self.respond(SERVER_URL + "is not accessible", 400)
     else :
         print(getLogTime() + "Status:" + str(resp.getcode()) + ", Body:" + str(resp.read()))
         print(getLogTime() + "HTTP GET Req reach to " + SERVER_URL)
-        #self.respond("HTTP GET Req reach to " + SERVER_URL)
 
 
 class MyRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
@@ -34,6 +44,7 @@ class MyRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
         # params = urlparse(self.path).query
         elem = urlparse(self.path).path.split('/')
         print elem
+        print self.address_string()
 
         if len(elem) > 2:
             self.respond("Unknow request", 400)
@@ -48,10 +59,17 @@ class MyRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
 
         # HTTP request processing /forward
         elif elem[1].lower() == "forward" :
-            p = Process(target=process, args=())
-
-            p.start()
-            self.respond("Request forwarded")
+            #p = Process(target=process, args=())
+            #p.start()
+            resp = urllib.urlopen(SERVER_URL)
+            if (resp.getcode() != 200) :
+                print(getLogTime() + "Status:" + str(resp.getcode()) + ", Body:" + str(resp.read()))
+                print(getLogTime() + SERVER_URL + "is not accessible")
+                self.respond(SERVER_URL + "is not accessible", 400)
+            else :
+                print(getLogTime() + "Status:" + str(resp.getcode()) + ", Body:" + str(resp.read()))
+                print(getLogTime() + "HTTP GET Req reach to " + SERVER_URL)
+                self.respond("HTTP GET Req reach to " + SERVER_URL)
 
         else :
             self.respond("Unknow request", 400)
