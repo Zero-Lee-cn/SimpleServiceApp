@@ -3,10 +3,8 @@ import socket
 import fcntl
 import struct
 import urllib
-import ConfigParser
 import SocketServer
 import BaseHTTPServer
-from multiprocessing import Process
 from datetime import datetime, date
 from urlparse import urlparse
 
@@ -73,7 +71,9 @@ class MyRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
                 self.respond("HTTP GET Req reach to " + SERVER_URL)
 
         elif elem[1].lower() == "crash" :
-            exit(2)
+            print(getLogTime() + "Container will stop working")
+            os.system('kill %d' % os.getpid())
+
         else :
             self.respond("Unknow request", 400)
 
