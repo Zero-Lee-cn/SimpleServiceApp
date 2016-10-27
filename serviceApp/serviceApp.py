@@ -104,7 +104,7 @@ class MyRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
 if __name__=='__main__':
 
     configs = {}
-    with open("config.properties") as myfile:
+    with open("/etc/config/config.properties") as myfile:
         for line in myfile:
             name, var = line[:-1].partition("=")[::2]
             configs[name.strip()] = var
