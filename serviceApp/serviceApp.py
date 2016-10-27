@@ -24,7 +24,7 @@ def get_ip_address(ifname):
 
 
 def getLogTime():
-    return date.today().strftime('%Y-%m-%d ') + datetime.now().strftime('%H:%M:%S.%f ')[:-3] + ' ' + get_ip_address('eth0') + ":" + PORT + ' '
+    return date.today().strftime('%Y-%m-%d ') + datetime.now().strftime('%H:%M:%S.%f ')[:-3] + ' ' + get_ip_address('eth0') + ":" + str(PORT) + ' '
 
 def process():
     print(getLogTime() + "Detached Processing from  " )
